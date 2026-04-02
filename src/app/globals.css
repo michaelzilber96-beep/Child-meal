@@ -1,0 +1,102 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Gender Theme Variables ────────────────────────────────────────
+   Default (no gender / girl): Rose / Peach pastel — feminine clinical
+   [data-gender="boy"]: Azure / Sky — modern clinical blue
+   ────────────────────────────────────────────────────────────────── */
+:root,
+html[data-gender="girl"] {
+  --th-primary: #fb7185;        /* rose-400 */
+  --th-primary-dark: #f43f5e;   /* rose-500 */
+  --th-primary-darker: #e11d48; /* rose-600 */
+  --th-primary-dim: #fecdd3;    /* rose-200 */
+  --th-light: #FDF2F8;
+  --th-accent: #FDBA74;         /* peach-soft */
+  --th-accent-dark: #fb923c;    /* orange-400 */
+  --th-shadow: rgba(251, 113, 133, 0.30);
+  --th-greeting-from: #FDF2F8;
+  --th-greeting-to: #FFF7ED;
+  --th-greeting-border: #F9A8D4;
+}
+
+html[data-gender="boy"] {
+  --th-primary: #60a5fa;        /* blue-400 */
+  --th-primary-dark: #3b82f6;   /* blue-500 */
+  --th-primary-darker: #2563eb; /* blue-600 */
+  --th-primary-dim: #bfdbfe;    /* blue-200 */
+  --th-light: #eff6ff;          /* blue-50 */
+  --th-accent: #7dd3fc;         /* sky-300 */
+  --th-accent-dark: #38bdf8;    /* sky-400 */
+  --th-shadow: rgba(96, 165, 250, 0.30);
+  --th-greeting-from: #eff6ff;
+  --th-greeting-to: #f0f9ff;
+  --th-greeting-border: #93c5fd;
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-bg text-gray-800;
+    min-height: 100dvh;
+  }
+
+  /* Remove default number input arrows */
+  input[type='number']::-webkit-inner-spin-button,
+  input[type='number']::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type='number'] {
+    -moz-appearance: textfield;
+  }
+
+  /* Custom range slider */
+  input[type='range'] {
+    @apply cursor-pointer;
+  }
+  input[type='range']::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 9999px;
+    background: var(--th-primary);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    cursor: pointer;
+    margin-top: -6px;
+    transition: background 200ms ease;
+  }
+  input[type='range']::-webkit-slider-runnable-track {
+    @apply h-2 rounded-full bg-gray-200;
+  }
+}
+
+/* ── Fade-in animation for meal card swap ────────────────────────── */
+@keyframes mealFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-meal-in {
+  animation: mealFadeIn 250ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ── Tooltip ─────────────────────────────────────────────────────── */
+.tooltip-content {
+  animation: mealFadeIn 150ms ease both;
+}
