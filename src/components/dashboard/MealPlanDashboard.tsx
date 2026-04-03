@@ -40,7 +40,16 @@ export function MealPlanDashboard({
   });
 
   const nutrition = calculateNutrition(profile);
-  const pct = Math.min(100, Math.round((plan.totalKcal / plan.targetKcal) * 100));
+  const actualKcal = [plan.breakfast, plan.lunch, plan.dinner]
+    .filter(Boolean)
+    .reduce((sum, meal) => sum + (meal.recipe.nutrition.kcal ?? 0), 0);
+  const targetKcal = plan.targetKcal;
+  const pct = Math.min((actualKcal / targetKcal) * 100, 100);
+  const barColor =
+    pct < 50 ? 'var(--th-primary-dim)' :
+    pct < 85 ? 'var(--th-primary)' :
+    pct <= 100 ? 'var(--th-primary-darker)' :
+    '#f59e0b';
   const isTooYoung = profile.ageMonths < 4;
 
   // Gender-aware tagline (Hebrew only — en/ru use same key)
@@ -109,15 +118,15 @@ export function MealPlanDashboard({
             {/* Calorie progress — theme-aware */}
             <div className="space-y-1.5">
               <div className="flex justify-between text-xs text-gray-500">
-                <span>{t('calorieTarget', { target: plan.targetKcal })}</span>
-                <span>{t('calorieTotal', { total: plan.totalKcal })}</span>
+                <span>{t('calorieTarget', { target: targetKcal })}</span>
+                <span>{t('calorieTotal', { total: actualKcal })}</span>
               </div>
               <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                 <div
                   className="h-full rounded-full transition-all duration-700"
                   style={{
                     width: `${pct}%`,
-                    background: 'linear-gradient(to right, var(--th-primary), var(--th-accent))',
+                    background: barColor,
                   }}
                 />
               </div>
