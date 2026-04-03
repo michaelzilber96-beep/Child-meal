@@ -111,7 +111,7 @@ export function ProfileStep({ draft, onUpdate }: ProfileStepProps) {
           step={1}
           value={age !== '' ? ageNum : 0}
           onChange={e => setAge(e.target.value)}
-          className="w-full h-2 rounded-full appearance-none bg-gray-200 cursor-pointer"
+          className="w-full h-2 rounded-full appearance-none bg-gray-200 cursor-pointer rtl:rotate-180 rtl:[direction:rtl]"
         />
         <div className="flex justify-between text-xs text-gray-400 rtl:flex-row-reverse">
           <span>0</span>
