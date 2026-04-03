@@ -94,7 +94,8 @@
     "kcalUnit": "kcal",
     "proteinUnit": "g protein",
     "substitutionNote": "⚠️ Recommended substitution: {note}",
-    "noSolidsYet": "Your child is too young for solid foods. Until 4 months — breast milk or formula only."
+    "noSolidsYet": "Your child is too young for solid foods. Until 4 months — breast milk or formula only.",
+    "recipe": "Recipe"
   },
   "recipes": {
     "okayuName": "Okayu — Rice Porridge with Tofu",

@@ -1,10 +1,12 @@
 'use client';
 
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { MealSlot, PlannedMeal } from '@/types';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { cn } from '@/lib/utils';
+import { RECIPE_DETAILS, RecipeDetail } from '@/data/recipeDetails';
 
 const SLOT_CONFIG: Record<MealSlot, { color: string; bg: string; border: string; label: string; emoji: string }> = {
   breakfast: {
@@ -36,15 +38,19 @@ interface MealCardProps {
   /** Increment this to trigger the fade-in animation */
   animKey: number;
   onChangeDish: () => void;
+  childAgeMonths: number;
 }
 
-export function MealCard({ slot, meal, animKey, onChangeDish }: MealCardProps) {
+export function MealCard({ slot, meal, animKey, onChangeDish, childAgeMonths }: MealCardProps) {
   const t = useTranslations('dashboard');
   const tr = useTranslations('recipes');
   const config = SLOT_CONFIG[slot];
+  const [recipeOpen, setRecipeOpen] = useState(false);
 
   const recipeName = (tr as (k: string) => string)(meal.recipe.nameKey.replace('recipes.', ''));
   const recipeBenefit = (tr as (k: string) => string)(meal.recipe.benefitKey.replace('recipes.', ''));
+
+  const detail = RECIPE_DETAILS[meal.recipe.id];
 
   return (
     <Card className="space-y-4">
@@ -108,7 +114,17 @@ export function MealCard({ slot, meal, animKey, onChangeDish }: MealCardProps) {
           </div>
         )}
 
-
+        {/* Recipe drawer */}
+        {detail && (
+          <RecipeDrawer
+            detail={detail}
+            childAgeMonths={childAgeMonths}
+            minAgeMonths={meal.recipe.minAgeMonths}
+            isOpen={recipeOpen}
+            onToggle={() => setRecipeOpen(o => !o)}
+            recipeLabel={t('recipe')}
+          />
+        )}
       </div>
 
       {/* Change dish button — outside animated wrapper so it doesn't flash */}
@@ -122,6 +138,124 @@ export function MealCard({ slot, meal, animKey, onChangeDish }: MealCardProps) {
         🔄 {t('changeDish')}
       </Button>
     </Card>
+  );
+}
+
+// ── Recipe Drawer ─────────────────────────────────────────────────
+
+interface RecipeDrawerProps {
+  detail: RecipeDetail;
+  childAgeMonths: number;
+  minAgeMonths: number;
+  isOpen: boolean;
+  onToggle: () => void;
+  recipeLabel: string;
+}
+
+function RecipeDrawer({ detail, childAgeMonths, minAgeMonths, isOpen, onToggle, recipeLabel }: RecipeDrawerProps) {
+  return (
+    <div className="space-y-2">
+      {/* Header — always visible, controls toggle */}
+      <button
+        type="button"
+        onClick={onToggle}
+        className="w-full flex items-center justify-between px-4 py-2.5 rounded-2xl border text-sm font-semibold"
+        style={{
+          background: 'var(--th-primary-dim)',
+          color: 'var(--th-primary-darker)',
+          borderColor: 'var(--th-primary-dim)',
+        }}
+      >
+        <span>📖 {recipeLabel}</span>
+        <span
+          style={{
+            display: 'inline-block',
+            transition: 'transform 200ms ease',
+            transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+          }}
+        >
+          ▾
+        </span>
+      </button>
+
+      {/* Content — visible only when open */}
+      {isOpen && (
+        <div key={String(isOpen)} className="animate-meal-in bg-gray-50 border border-gray-200 rounded-2xl p-4 space-y-4">
+
+          {/* 1. TIME BAR */}
+          <p className="text-xs text-gray-500 font-medium">
+            ⏱ {detail.prepMinutes} min prep · {detail.cookMinutes} min cook
+          </p>
+
+          {/* 2. AGE SUITABILITY BADGE */}
+          {childAgeMonths >= minAgeMonths ? (
+            <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-1.5 inline-flex">
+              ✅ Suitable for your child&apos;s age
+            </span>
+          ) : (
+            <span className="text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-3 py-1.5 inline-flex">
+              ⚠️ Best introduced at {minAgeMonths} months
+            </span>
+          )}
+
+          {/* 3. EQUIPMENT */}
+          <div className="space-y-1.5">
+            <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">🍳 Equipment needed</p>
+            <div className="flex flex-wrap gap-1.5">
+              {detail.equipment.map((item, i) => (
+                <span key={i} className="bg-white border border-gray-200 rounded-xl px-2 py-1 text-xs text-gray-600">
+                  {item}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* 4. INGREDIENTS */}
+          <div className="space-y-1.5">
+            <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">🛒 Ingredients</p>
+            <div className="divide-y divide-gray-100">
+              {detail.ingredients.map((ing, i) => (
+                <div key={i} className="flex justify-between py-1">
+                  <span className="text-sm text-gray-700">{ing.item}</span>
+                  <span className="text-sm font-semibold text-gray-800">{ing.quantity} {ing.unit}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 5. INSTRUCTIONS */}
+          <div className="space-y-1.5">
+            <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">👩‍🍳 How to make it</p>
+            <div className="space-y-2">
+              {detail.instructions.map((step, i) => (
+                <div key={i} className="flex gap-3">
+                  <span className="w-5 h-5 rounded-full bg-gray-200 text-xs flex items-center justify-center text-gray-600 flex-shrink-0 mt-0.5">
+                    {i + 1}
+                  </span>
+                  <p className="text-sm text-gray-700 leading-relaxed">{step}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 6. SPICE / SALT SAFETY NOTE */}
+          <div
+            className={cn(
+              'rounded-2xl p-3 text-xs leading-relaxed',
+              childAgeMonths < 10
+                ? 'bg-amber-50 border border-amber-200 text-amber-800'
+                : 'bg-blue-50 border border-blue-200 text-blue-800'
+            )}
+          >
+            {childAgeMonths < 10 ? (
+              <><span>⚠️ </span><strong>Under 10 months: </strong>{detail.spiceSaltNote}</>
+            ) : (
+              <><span>ℹ️ </span>{detail.spiceSaltNote}</>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 

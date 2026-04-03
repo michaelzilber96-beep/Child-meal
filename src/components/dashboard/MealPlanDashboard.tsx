@@ -146,6 +146,7 @@ export function MealPlanDashboard({
               meal={plan[slot]}
               animKey={animKeys[slot]}
               onChangeDish={() => handleChangeMeal(slot)}
+              childAgeMonths={profile.ageMonths}
             />
           ))}
 
