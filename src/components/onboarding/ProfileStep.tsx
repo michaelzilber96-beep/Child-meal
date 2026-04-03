@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { ChildProfile, Gender } from '@/types';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
+import { ThemeProvider } from '@/components/ui/ThemeProvider';
 
 interface ProfileStepProps {
   draft: Partial<ChildProfile>;
@@ -47,6 +48,7 @@ export function ProfileStep({ draft, onUpdate }: ProfileStepProps) {
 
   return (
     <div className="space-y-5">
+      <ThemeProvider gender={gender} />
       {/* Name */}
       <div className="space-y-1.5">
         <label htmlFor="child-name" className="block text-sm font-semibold text-gray-700">
