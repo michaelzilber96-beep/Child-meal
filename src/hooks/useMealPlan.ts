@@ -5,6 +5,15 @@ import { ChildProfile, DailyPlan, MealSlot } from '@/types';
 import { generateDailyPlan, regenerateMeal } from '@/lib/mealEngine';
 import { loadStorage, savePlan } from '@/lib/storage';
 
+function profileHash(p: ChildProfile): string {
+  return [
+    p.ageMonths, p.weightKg, p.gender, p.hasArfid,
+    [...p.allergens].sort().join(','),
+    [...p.exclusions].sort().join(','),
+    [...p.cuisinePreferences].sort().join(','),
+  ].join('|');
+}
+
 export function useMealPlan(profile: ChildProfile | null) {
   const [plan, setPlan] = useState<DailyPlan | null>(null);
 
@@ -15,11 +24,14 @@ export function useMealPlan(profile: ChildProfile | null) {
     const storage = loadStorage();
     const today = new Date().toISOString().split('T')[0];
 
-    if (storage.lastPlan && storage.lastPlan.date === today) {
+    const isToday          = storage.lastPlan?.date === today;
+    const profileUnchanged = storage.lastPlan?.profileHash === profileHash(profile);
+
+    if (isToday && profileUnchanged && storage.lastPlan) {
       setPlan(storage.lastPlan);
     } else {
       const newPlan = generateDailyPlan(profile);
-      savePlan(newPlan);
+      savePlan({ ...newPlan, profileHash: profileHash(profile) });
       setPlan(newPlan);
     }
   }, [profile]);
@@ -29,7 +41,7 @@ export function useMealPlan(profile: ChildProfile | null) {
       if (!profile || !plan) return;
       const newMeal = regenerateMeal(profile, slot, plan);
       const updatedPlan: DailyPlan = { ...plan, [slot]: newMeal };
-      savePlan(updatedPlan);
+      savePlan({ ...updatedPlan, profileHash: profileHash(profile) });
       setPlan(updatedPlan);
     },
     [profile, plan]
@@ -38,7 +50,7 @@ export function useMealPlan(profile: ChildProfile | null) {
   const regeneratePlan = useCallback(() => {
     if (!profile) return;
     const newPlan = generateDailyPlan(profile);
-    savePlan(newPlan);
+    savePlan({ ...newPlan, profileHash: profileHash(profile) });
     setPlan(newPlan);
   }, [profile]);
 

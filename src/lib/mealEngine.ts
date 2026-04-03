@@ -151,12 +151,17 @@ export function filterRecipes(
 
 // ── ARFID Exposure Step ───────────────────────────────────────────
 
-export function getExposureStep(): number {
+const SLOT_ARFID_OFFSET: Record<MealSlot, number> = {
+  breakfast: 0,
+  lunch: 1,
+  dinner: 2,
+};
+
+export function getExposureStep(slot: MealSlot): number {
   const now = new Date();
   const start = new Date(now.getFullYear(), 0, 0);
-  const diff = now.getTime() - start.getTime();
-  const dayOfYear = Math.floor(diff / (1000 * 60 * 60 * 24));
-  return (dayOfYear % 5) + 1;
+  const dayOfYear = Math.floor((now.getTime() - start.getTime()) / 86400000);
+  return ((dayOfYear + SLOT_ARFID_OFFSET[slot]) % 5) + 1;
 }
 
 // ── Daily Plan Generation ─────────────────────────────────────────
@@ -189,10 +194,10 @@ function pickMeal(
   const shuffled = shuffleWithSeed(candidates, daySeed + slot.charCodeAt(0));
   const chosen = shuffled[0];
 
-  const slotShare = SLOT_EER_SPLIT[slot];
-  const adjustedKcal = Math.round(nutrition.eerKcal * slotShare);
-  const proteinShare = (nutrition.proteinGMin + nutrition.proteinGMax) / 2;
-  const adjustedProteinG = Math.round(proteinShare * slotShare * 10) / 10;
+  const slotTarget       = nutrition.eerKcal * SLOT_EER_SPLIT[slot];
+  const scaleFactor      = slotTarget / chosen.recipe.nutrition.kcal;
+  const adjustedKcal     = Math.round(chosen.recipe.nutrition.kcal * scaleFactor);
+  const adjustedProteinG = Math.round(chosen.recipe.nutrition.proteinG * scaleFactor * 10) / 10;
 
   const result: PlannedMeal = {
     recipe: chosen.recipe,
@@ -203,7 +208,7 @@ function pickMeal(
   };
 
   if (profile.hasArfid) {
-    result.exposureStep = getExposureStep();
+    result.exposureStep = getExposureStep(slot);
   }
 
   return result;
@@ -213,9 +218,9 @@ export function generateDailyPlan(profile: ChildProfile): DailyPlan {
   const nutrition = calculateNutrition(profile);
   const daySeed = getDaySeed();
 
-  const breakfast = pickMeal(profile, 'breakfast', nutrition, daySeed);
-  const lunch = pickMeal(profile, 'lunch', nutrition, daySeed);
-  const dinner = pickMeal(profile, 'dinner', nutrition, daySeed);
+  const breakfast = pickMeal(profile, 'breakfast', nutrition, daySeed, []);
+  const lunch     = pickMeal(profile, 'lunch',     nutrition, daySeed, [breakfast.recipe.id]);
+  const dinner    = pickMeal(profile, 'dinner',    nutrition, daySeed, [breakfast.recipe.id, lunch.recipe.id]);
 
   return {
     breakfast,
@@ -233,7 +238,11 @@ export function regenerateMeal(
   currentPlan: DailyPlan
 ): PlannedMeal {
   const nutrition = calculateNutrition(profile);
-  const excludeIds = [currentPlan[slot].recipe.id];
+  const otherSlots = (['breakfast', 'lunch', 'dinner'] as MealSlot[]).filter(s => s !== slot);
+  const excludeIds = [
+    currentPlan[slot].recipe.id,
+    ...otherSlots.map(s => currentPlan[s].recipe.id),
+  ];
 
   let candidates = filterRecipes(profile, slot, excludeIds);
   if (candidates.length === 0 && profile.cuisinePreferences.length > 0) {
@@ -249,10 +258,10 @@ export function regenerateMeal(
   );
   const chosen = shuffled[0];
 
-  const slotShare = SLOT_EER_SPLIT[slot];
-  const adjustedKcal = Math.round(nutrition.eerKcal * slotShare);
-  const proteinShare = (nutrition.proteinGMin + nutrition.proteinGMax) / 2;
-  const adjustedProteinG = Math.round(proteinShare * slotShare * 10) / 10;
+  const slotTarget       = nutrition.eerKcal * SLOT_EER_SPLIT[slot];
+  const scaleFactor      = slotTarget / chosen.recipe.nutrition.kcal;
+  const adjustedKcal     = Math.round(chosen.recipe.nutrition.kcal * scaleFactor);
+  const adjustedProteinG = Math.round(chosen.recipe.nutrition.proteinG * scaleFactor * 10) / 10;
 
   const result: PlannedMeal = {
     recipe: chosen.recipe,
@@ -263,7 +272,7 @@ export function regenerateMeal(
   };
 
   if (profile.hasArfid) {
-    result.exposureStep = getExposureStep();
+    result.exposureStep = getExposureStep(slot);
   }
 
   return result;

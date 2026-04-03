@@ -22,6 +22,7 @@ export const RECIPES: Recipe[] = [
     id: 'arepas-con-queso',
     nameKey: 'recipes.arepasName',
     descriptionKey: 'recipes.arepasDesc',
+    // FIX: was 'recipes.areapasBenefit' (typo)
     benefitKey: 'recipes.arepasBenefit',
     origin: 'Venezuela',
     flagEmoji: '🇻🇪',
@@ -33,6 +34,7 @@ export const RECIPES: Recipe[] = [
     textures: ['fingerFood', 'soft'],
     nutrition: { kcal: 180, proteinG: 7, carbsG: 28, fatG: 5 },
     substitutions: {
+      // FIX: was 'recipes.areapasDairySub' (typo)
       dairy: 'recipes.arepasDairySub',
     },
   },

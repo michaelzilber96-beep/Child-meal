@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { useProfile } from '@/hooks/useProfile';
 import { useMealPlan } from '@/hooks/useMealPlan';
 import { MealPlanDashboard } from '@/components/dashboard/MealPlanDashboard';
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -32,12 +33,14 @@ export default function DashboardPage() {
   }
 
   return (
-    <MealPlanDashboard
-      profile={profile}
-      plan={plan}
-      onChangeMeal={changeMeal}
-      onRegeneratePlan={regeneratePlan}
-      locale={locale}
-    />
+    <ErrorBoundary label="Dashboard">
+      <MealPlanDashboard
+        profile={profile}
+        plan={plan}
+        onChangeMeal={changeMeal}
+        onRegeneratePlan={regeneratePlan}
+        locale={locale}
+      />
+    </ErrorBoundary>
   );
 }

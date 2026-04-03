@@ -1,5 +1,4 @@
 import { redirect } from 'next/navigation';
-import { loadStorage } from '@/lib/storage';
 
 interface PageProps {
   params: Promise<{ locale: string }>;

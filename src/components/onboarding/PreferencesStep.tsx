@@ -55,8 +55,8 @@ export function PreferencesStep({ selected, onChange }: PreferencesStepProps) {
               className={cn(
                 'flex flex-col items-center gap-1.5 p-4 rounded-2xl border-2 transition-all min-h-touch',
                 isSelected
-                  ? 'border-rose-400 bg-rose-light text-rose-700 shadow-glow'
-                  : 'border-gray-200 bg-white text-gray-600 hover:border-rose-200 hover:bg-rose-50'
+                  ? 'border-th-primary bg-th-light text-th-dark shadow-glow'
+                  : 'border-gray-200 bg-white text-gray-600 hover:border-th-dim hover:bg-th-light/50'
               )}
             >
               <span className="text-3xl">{emoji}</span>
@@ -71,7 +71,7 @@ export function PreferencesStep({ selected, onChange }: PreferencesStepProps) {
         size="sm"
         fullWidth
         onClick={selectAll}
-        className="text-rose-500 underline underline-offset-2"
+        className="text-th-dark underline underline-offset-2"
       >
         {to('step4SelectAll')}
       </Button>

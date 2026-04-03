@@ -102,6 +102,7 @@ export interface DailyPlan {
   totalKcal: number;
   targetKcal: number;
   date: string;
+  profileHash?: string;
 }
 
 // ── EER Reference ─────────────────────────────────────────────────
