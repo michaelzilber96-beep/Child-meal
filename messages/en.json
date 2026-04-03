@@ -24,10 +24,6 @@
     "step5Title": "Food Exclusions",
     "step5Subtitle": "Select foods to exclude from all meal suggestions",
     "step5None": "No exclusions — everything is allowed ✓",
-    "step6Title": "Feeding Challenges",
-    "step6Subtitle": "Does your child have selective eating or feeding difficulties?",
-    "step6Arfid": "My child is a picky eater / ARFID",
-    "step6ArfidDesc": "If your child is very selective, we'll show you a gradual exposure ladder for each dish — to help them get comfortable with new foods",
     "startPlanning": "Start Planning!"
   },
   "profile": {
@@ -98,23 +94,7 @@
     "kcalUnit": "kcal",
     "proteinUnit": "g protein",
     "substitutionNote": "⚠️ Recommended substitution: {note}",
-    "noSolidsYet": "Your child is too young for solid foods. Until 4 months — breast milk or formula only.",
-    "arfidTip": "Picky Eating Tip"
-  },
-  "arfid": {
-    "title": "Today's Exposure Ladder",
-    "subtitle": "Step {step} of 5",
-    "tooltipDesc": "The Exposure Ladder is a 5-step evidence-based therapy technique for children with selective eating (ARFID). Each step gradually reduces food anxiety through small, measurable actions — without pressure.",
-    "step1Title": "Presence",
-    "step1Desc": "Place the food on the table without pressure. Let your child look at it from a distance.",
-    "step2Title": "Touch",
-    "step2Desc": "Invite your child to help set the table. Touch the food together in a playful way.",
-    "step3Title": "Smell",
-    "step3Desc": "Describe the food's smell in neutral words. 'It smells like...' — without judgment.",
-    "step4Title": "Microscopic Taste",
-    "step4Desc": "Allow licking or touching lips. No need to swallow. Wipe after — no judgment.",
-    "step5Title": "Chewing & Swallowing",
-    "step5Desc": "Positive reinforcement only! 'You were so brave to try it.' No pressure to finish."
+    "noSolidsYet": "Your child is too young for solid foods. Until 4 months — breast milk or formula only."
   },
   "recipes": {
     "okayuName": "Okayu — Rice Porridge with Tofu",

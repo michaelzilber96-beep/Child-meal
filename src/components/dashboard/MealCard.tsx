@@ -5,7 +5,6 @@ import { MealSlot, PlannedMeal } from '@/types';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { cn } from '@/lib/utils';
-import { ExposureLadder } from './ExposureLadder';
 
 const SLOT_CONFIG: Record<MealSlot, { color: string; bg: string; border: string; label: string; emoji: string }> = {
   breakfast: {
@@ -109,10 +108,7 @@ export function MealCard({ slot, meal, animKey, onChangeDish }: MealCardProps) {
           </div>
         )}
 
-        {/* ARFID exposure ladder */}
-        {meal.exposureStep !== undefined && (
-          <ExposureLadder currentStep={meal.exposureStep} />
-        )}
+
       </div>
 
       {/* Change dish button — outside animated wrapper so it doesn't flash */}

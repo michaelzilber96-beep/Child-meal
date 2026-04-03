@@ -48,7 +48,6 @@ export interface ChildProfile {
   allergens: Allergen[];
   exclusions: FoodExclusion[];
   cuisinePreferences: CuisineRegion[];
-  hasArfid: boolean;
   locale: Locale;
   createdAt: string;
 }
@@ -92,7 +91,6 @@ export interface PlannedMeal {
   adjustedProteinG: number;
   hasSubstitution: boolean;
   substitutionKeys: string[];
-  exposureStep?: number;
 }
 
 export interface DailyPlan {

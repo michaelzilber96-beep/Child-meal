@@ -149,21 +149,6 @@ export function filterRecipes(
   return results;
 }
 
-// ── ARFID Exposure Step ───────────────────────────────────────────
-
-const SLOT_ARFID_OFFSET: Record<MealSlot, number> = {
-  breakfast: 0,
-  lunch: 1,
-  dinner: 2,
-};
-
-export function getExposureStep(slot: MealSlot): number {
-  const now = new Date();
-  const start = new Date(now.getFullYear(), 0, 0);
-  const dayOfYear = Math.floor((now.getTime() - start.getTime()) / 86400000);
-  return ((dayOfYear + SLOT_ARFID_OFFSET[slot]) % 5) + 1;
-}
-
 // ── Daily Plan Generation ─────────────────────────────────────────
 
 const SLOT_EER_SPLIT: Record<MealSlot, number> = {
@@ -206,10 +191,6 @@ function pickMeal(
     hasSubstitution: chosen.hasSubstitution,
     substitutionKeys: chosen.substitutionKeys,
   };
-
-  if (profile.hasArfid) {
-    result.exposureStep = getExposureStep(slot);
-  }
 
   return result;
 }
@@ -270,10 +251,6 @@ export function regenerateMeal(
     hasSubstitution: chosen.hasSubstitution,
     substitutionKeys: chosen.substitutionKeys,
   };
-
-  if (profile.hasArfid) {
-    result.exposureStep = getExposureStep(slot);
-  }
 
   return result;
 }

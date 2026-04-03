@@ -14,9 +14,7 @@ import { ProfileStep } from './ProfileStep';
 import { AllergiesStep } from './AllergiesStep';
 import { PreferencesStep } from './PreferencesStep';
 import { ExclusionsStep } from './ExclusionsStep';
-import { ChallengesStep } from './ChallengesStep';
-
-const TOTAL_STEPS = 6;
+const TOTAL_STEPS = 5;
 
 interface OnboardingWizardProps {
   locale: string;
@@ -33,7 +31,6 @@ export function OnboardingWizard({ locale }: OnboardingWizardProps) {
     allergens: [],
     exclusions: [],
     cuisinePreferences: [],
-    hasArfid: false,
   });
 
   // Rehydrate draft after locale redirect
@@ -69,7 +66,6 @@ export function OnboardingWizard({ locale }: OnboardingWizardProps) {
       allergens: draft.allergens ?? [],
       exclusions: draft.exclusions ?? [],
       cuisinePreferences: draft.cuisinePreferences ?? [],
-      hasArfid: draft.hasArfid ?? false,
       locale: (draft.locale as Locale) ?? 'he',
       createdAt: new Date().toISOString(),
     };
@@ -84,7 +80,6 @@ export function OnboardingWizard({ locale }: OnboardingWizardProps) {
     3: t('step3Title'),
     4: t('step4Title'),
     5: t('step5Title'),
-    6: t('step6Title'),
   };
 
   const STEP_SUBTITLES: Record<number, string> = {
@@ -93,7 +88,6 @@ export function OnboardingWizard({ locale }: OnboardingWizardProps) {
     3: t('step3Subtitle'),
     4: t('step4Subtitle'),
     5: t('step5Subtitle'),
-    6: t('step6Subtitle'),
   };
 
   // Gender-aware tagline (Hebrew only — en/ru use same key)
@@ -180,16 +174,6 @@ export function OnboardingWizard({ locale }: OnboardingWizardProps) {
                   <ExclusionsStep
                     selected={draft.exclusions ?? []}
                     onChange={exclusions => updateDraft({ exclusions: exclusions as FoodExclusion[] })}
-                  />
-                  <NavButtons onBack={handleBack} onNext={handleNext} t={t} />
-                </>
-              )}
-
-              {step === 6 && (
-                <>
-                  <ChallengesStep
-                    hasArfid={draft.hasArfid ?? false}
-                    onChange={hasArfid => updateDraft({ hasArfid })}
                   />
                   <div className="flex gap-3">
                     <NavBackButton onBack={handleBack} t={t} />

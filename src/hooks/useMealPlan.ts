@@ -7,7 +7,7 @@ import { loadStorage, savePlan } from '@/lib/storage';
 
 function profileHash(p: ChildProfile): string {
   return [
-    p.ageMonths, p.weightKg, p.gender, p.hasArfid,
+    p.ageMonths, p.weightKg, p.gender,
     [...p.allergens].sort().join(','),
     [...p.exclusions].sort().join(','),
     [...p.cuisinePreferences].sort().join(','),
