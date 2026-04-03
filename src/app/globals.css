@@ -3,10 +3,24 @@
 @tailwind utilities;
 
 /* ── Gender Theme Variables ────────────────────────────────────────
-   Default (no gender / girl): Rose / Peach pastel — feminine clinical
+   Default (no gender): Neutral warm slate/grey
+   [data-gender="girl"]: Rose / Peach pastel — feminine clinical
    [data-gender="boy"]: Azure / Sky — modern clinical blue
    ────────────────────────────────────────────────────────────────── */
-:root,
+:root {
+  --th-primary: #94a3b8;
+  --th-primary-dark: #64748b;
+  --th-primary-darker: #475569;
+  --th-primary-dim: #e2e8f0;
+  --th-light: #f8fafc;
+  --th-accent: #cbd5e1;
+  --th-accent-dark: #94a3b8;
+  --th-shadow: rgba(148, 163, 184, 0.30);
+  --th-greeting-from: #f8fafc;
+  --th-greeting-to: #f1f5f9;
+  --th-greeting-border: #cbd5e1;
+}
+
 html[data-gender="girl"] {
   --th-primary: #fb7185;        /* rose-400 */
   --th-primary-dark: #f43f5e;   /* rose-500 */
