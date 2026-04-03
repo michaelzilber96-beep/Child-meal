@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { ChildProfile, DailyPlan, MealSlot } from '@/types';
@@ -68,6 +68,50 @@ export function MealPlanDashboard({
         : 'greetingBoy'
       : 'greeting';
 
+  // ── Sticky kcal bar scroll behaviour ──────────────────────────────
+  const barRef = useRef<HTMLDivElement>(null);
+  const fillRef = useRef<HTMLDivElement>(null);
+  const lastScrollY = useRef(0);
+  const bouncingRef = useRef(false);
+  const [barShown, setBarShown] = useState(true);
+  const [bouncing, setBouncing] = useState(false);
+
+  useEffect(() => {
+    const fill = fillRef.current;
+
+    function onAnimationEnd() {
+      setBouncing(false);
+      bouncingRef.current = false;
+    }
+    if (fill) fill.addEventListener('animationend', onAnimationEnd);
+
+    function onScroll() {
+      const y = window.scrollY;
+      const atTop = y < 10;
+      const atBottom = window.innerHeight + y >= document.body.scrollHeight - 40;
+      const goingDown = y > lastScrollY.current;
+      lastScrollY.current = y;
+
+      if (atTop) {
+        setBarShown(true);
+      } else if (goingDown) {
+        setBarShown(true);
+      }
+      // scrolling up: no change — bar stays visible
+
+      if (atBottom && !bouncingRef.current) {
+        bouncingRef.current = true;
+        setBouncing(true);
+      }
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      if (fill) fill.removeEventListener('animationend', onAnimationEnd);
+    };
+  }, []);
+
   function handleChangeMeal(slot: MealSlot) {
     setAnimKeys(prev => ({ ...prev, [slot]: prev[slot] + 1 }));
     onChangeMeal(slot);
@@ -82,6 +126,20 @@ export function MealPlanDashboard({
     <>
       {/* Syncs data-gender on <html> so CSS variables switch the palette */}
       <ThemeProvider gender={profile.gender} />
+
+      {/* barBounce keyframes injected inline — no Tailwind dependency */}
+      <style>{`
+        @keyframes barBounce {
+          0%   { transform: translateY(0); }
+          30%  { transform: translateY(-6px); }
+          60%  { transform: translateY(3px); }
+          80%  { transform: translateY(-2px); }
+          100% { transform: translateY(0); }
+        }
+        .bar-bounce {
+          animation: barBounce 0.55s ease-in-out;
+        }
+      `}</style>
 
       <div className="min-h-screen bg-bg pb-12">
         {/* Top header */}
@@ -101,6 +159,37 @@ export function MealPlanDashboard({
           </div>
         </div>
 
+        {/* Sticky kcal bar — slides into view on scroll down, stays visible on up */}
+        <div
+          ref={barRef}
+          style={{
+            position: 'sticky',
+            top: '64px',
+            zIndex: 30,
+            transform: barShown ? 'translateY(0)' : 'translateY(-110%)',
+            transition: 'transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+          }}
+        >
+          <div className="bg-white border-b border-gray-100 shadow-sm">
+            <div className="max-w-md mx-auto px-4 py-2.5 space-y-1">
+              <div className="flex justify-between text-xs text-gray-500">
+                <span>{t('calorieTarget', { target: targetKcal })}</span>
+                <span>{t('calorieTotal', { total: actualKcal })}</span>
+              </div>
+              <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                <div
+                  ref={fillRef}
+                  className={`h-full rounded-full transition-all duration-700${bouncing ? ' bar-bounce' : ''}`}
+                  style={{
+                    width: `${pct}%`,
+                    background: barColor,
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div className="max-w-md mx-auto px-4 py-6 space-y-5">
           {/* Greeting card — theme-aware gradient via CSS variables */}
           <div
@@ -114,23 +203,6 @@ export function MealPlanDashboard({
               {t(greetingKey, { name: profile.name })}
             </p>
             <p className="text-sm text-gray-500">{t('date')}</p>
-
-            {/* Calorie progress — theme-aware */}
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-xs text-gray-500">
-                <span>{t('calorieTarget', { target: targetKcal })}</span>
-                <span>{t('calorieTotal', { total: actualKcal })}</span>
-              </div>
-              <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-                <div
-                  className="h-full rounded-full transition-all duration-700"
-                  style={{
-                    width: `${pct}%`,
-                    background: barColor,
-                  }}
-                />
-              </div>
-            </div>
 
             {/* Protein target */}
             <p className="text-xs text-gray-400">
