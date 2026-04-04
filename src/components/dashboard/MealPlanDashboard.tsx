@@ -73,6 +73,7 @@ export function MealPlanDashboard({
   const fillRef = useRef<HTMLDivElement>(null);
   const lastScrollY = useRef(0);
   const bouncingRef = useRef(false);
+  const atBottomRef = useRef(false);
   const [barShown, setBarShown] = useState(true);
   const [bouncing, setBouncing] = useState(false);
 
@@ -88,7 +89,7 @@ export function MealPlanDashboard({
     function onScroll() {
       const y = window.scrollY;
       const atTop = y < 10;
-      const atBottom = window.innerHeight + y >= document.body.scrollHeight - 40;
+      const isAtBottom = window.innerHeight + y >= document.body.scrollHeight - 40;
       const goingDown = y > lastScrollY.current;
       lastScrollY.current = y;
 
@@ -99,9 +100,17 @@ export function MealPlanDashboard({
       }
       // scrolling up: no change — bar stays visible
 
-      if (atBottom && !bouncingRef.current) {
-        bouncingRef.current = true;
-        setBouncing(true);
+      if (isAtBottom && !atBottomRef.current) {
+        atBottomRef.current = true;
+        if (!bouncingRef.current) {
+          bouncingRef.current = true;
+          setBouncing(true);
+        }
+      }
+
+      if (!isAtBottom) {
+        atBottomRef.current = false;
+        // do NOT trigger bounce here — only reset the guard
       }
     }
 
