@@ -154,8 +154,10 @@ interface RecipeDrawerProps {
 
 function RecipeDrawer({ detail, childAgeMonths, minAgeMonths, isOpen, onToggle, recipeLabel }: RecipeDrawerProps) {
   const locale = useLocale() as Locale;
-  const t = (field: LocalizedString | string): string =>
+  const loc = (field: LocalizedString | string): string =>
     typeof field === 'string' ? field : field[locale] ?? field.en;
+  const t = useTranslations('dashboard');
+  const td = t as unknown as (k: string, params?: Record<string, unknown>) => string;
   const isRTL = locale === 'he';
 
   return (
@@ -197,27 +199,27 @@ function RecipeDrawer({ detail, childAgeMonths, minAgeMonths, isOpen, onToggle, 
 
           {/* 1. TIME BAR */}
           <p className="text-xs text-gray-500 font-medium">
-            ⏱ {detail.prepMinutes} min prep · {detail.cookMinutes} min cook
+            ⏱ {td('prepTime', { min: detail.prepMinutes })} · {td('cookTime', { min: detail.cookMinutes })}
           </p>
 
           {/* 2. AGE SUITABILITY BADGE */}
           {childAgeMonths >= minAgeMonths ? (
             <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-1.5 inline-flex">
-              ✅ Suitable for your child&apos;s age
+              {td('suitableAge')}
             </span>
           ) : (
             <span className="text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-3 py-1.5 inline-flex">
-              ⚠️ Best introduced at {minAgeMonths} months
+              {td('notSuitableAge')}
             </span>
           )}
 
           {/* 3. EQUIPMENT */}
           <div className="space-y-1.5">
-            <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">🍳 Equipment needed</p>
+            <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">🍳 {td('equipmentNeeded')}</p>
             <div className="flex flex-wrap gap-1.5">
               {detail.equipment.map((item, i) => (
                 <span key={i} className="bg-white border border-gray-200 rounded-xl px-2 py-1 text-xs text-gray-600">
-                  {t(item)}
+                  {loc(item)}
                 </span>
               ))}
             </div>
@@ -225,27 +227,30 @@ function RecipeDrawer({ detail, childAgeMonths, minAgeMonths, isOpen, onToggle, 
 
           {/* 4. INGREDIENTS */}
           <div className="space-y-1.5">
-            <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">🛒 Ingredients</p>
+            <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">🛒 {td('ingredients')}</p>
             <div className="divide-y divide-gray-100">
-              {detail.ingredients.map((ing, i) => (
-                <div key={i} className={cn('flex justify-between py-1', isRTL && 'flex-row-reverse')}>
-                  <span className="text-sm text-gray-700">{t(ing.item)}</span>
-                  <span className="text-sm font-semibold text-gray-800">{ing.quantity} {ing.unit}</span>
-                </div>
-              ))}
+              {detail.ingredients.map((ing, i) => {
+                const translatedUnit = td(`units.${ing.unit}`) ?? ing.unit;
+                return (
+                  <div key={i} className={cn('flex justify-between py-1', isRTL && 'flex-row-reverse')}>
+                    <span className="text-sm text-gray-700">{loc(ing.item)}</span>
+                    <span className="text-sm font-semibold text-gray-800">{ing.quantity} {translatedUnit}</span>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
           {/* 5. INSTRUCTIONS */}
           <div className="space-y-1.5">
-            <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">👩‍🍳 How to make it</p>
+            <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">👩‍🍳 {td('instructions')}</p>
             <div className="space-y-2">
               {detail.instructions.map((step, i) => (
                 <div key={i} className="flex gap-3">
                   <span className="w-5 h-5 rounded-full bg-gray-200 text-xs flex items-center justify-center text-gray-600 flex-shrink-0 mt-0.5">
                     {i + 1}
                   </span>
-                  <p className="text-sm text-gray-700 leading-relaxed">{t(step)}</p>
+                  <p className="text-sm text-gray-700 leading-relaxed">{loc(step)}</p>
                 </div>
               ))}
             </div>
@@ -261,9 +266,9 @@ function RecipeDrawer({ detail, childAgeMonths, minAgeMonths, isOpen, onToggle, 
             )}
           >
             {childAgeMonths < 10 ? (
-              <><span>⚠️ </span><strong>Under 10 months: </strong>{t(detail.spiceSaltNote)}</>
+              <><span>⚠️ </span><strong>Under 10 months: </strong>{loc(detail.spiceSaltNote)}</>
             ) : (
-              <><span>ℹ️ </span>{t(detail.spiceSaltNote)}</>
+              <><span>ℹ️ </span>{loc(detail.spiceSaltNote)}</>
             )}
           </div>
 
