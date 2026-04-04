@@ -232,9 +232,9 @@ function RecipeDrawer({ detail, childAgeMonths, minAgeMonths, isOpen, onToggle, 
               {detail.ingredients.map((ing, i) => {
                 const translatedUnit = td(`units.${ing.unit}`) ?? ing.unit;
                 return (
-                  <div key={i} className={cn('flex justify-between py-1', isRTL && 'flex-row-reverse')}>
-                    <span className="text-sm text-gray-700">{loc(ing.item)}</span>
+                  <div key={i} className="py-1" style={{ display: 'flex', flexDirection: locale === 'he' ? 'row-reverse' : 'row', justifyContent: 'space-between', width: '100%' }}>
                     <span className="text-sm font-semibold text-gray-800">{ing.quantity} {translatedUnit}</span>
+                    <span className="text-sm text-gray-700">{loc(ing.item)}</span>
                   </div>
                 );
               })}

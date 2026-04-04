@@ -168,7 +168,7 @@ export function MealPlanDashboard({
           </div>
         </div>
 
-        {/* Sticky kcal bar — slides into view on scroll down, stays visible on up */}
+        {/* Sticky kcal bar */}
         <div
           ref={barRef}
           style={{
@@ -218,7 +218,6 @@ export function MealPlanDashboard({
               {t('protein')}: {t('proteinRange', { min: nutrition.proteinGMin, max: nutrition.proteinGMax })}
             </p>
           </div>
-
           {/* Too young warning */}
           {isTooYoung && (
             <div className="rounded-3xl bg-amber-50 border border-amber-200 p-5">
