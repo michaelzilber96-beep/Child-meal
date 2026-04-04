@@ -1,12 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { MealSlot, PlannedMeal } from '@/types';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { cn } from '@/lib/utils';
-import { RECIPE_DETAILS, RecipeDetail } from '@/data/recipeDetails';
+import { RECIPE_DETAILS, RecipeDetail, Locale, LocalizedString } from '@/data/recipeDetails';
 
 const SLOT_CONFIG: Record<MealSlot, { color: string; bg: string; border: string; label: string; emoji: string }> = {
   breakfast: {
@@ -153,8 +153,13 @@ interface RecipeDrawerProps {
 }
 
 function RecipeDrawer({ detail, childAgeMonths, minAgeMonths, isOpen, onToggle, recipeLabel }: RecipeDrawerProps) {
+  const locale = useLocale() as Locale;
+  const t = (field: LocalizedString | string): string =>
+    typeof field === 'string' ? field : field[locale] ?? field.en;
+  const isRTL = locale === 'he';
+
   return (
-    <div className="space-y-2">
+    <div className="space-y-2" dir={isRTL ? 'rtl' : 'ltr'}>
       {/* Header — always visible, controls toggle */}
       <button
         type="button"
@@ -212,7 +217,7 @@ function RecipeDrawer({ detail, childAgeMonths, minAgeMonths, isOpen, onToggle, 
             <div className="flex flex-wrap gap-1.5">
               {detail.equipment.map((item, i) => (
                 <span key={i} className="bg-white border border-gray-200 rounded-xl px-2 py-1 text-xs text-gray-600">
-                  {item}
+                  {t(item)}
                 </span>
               ))}
             </div>
@@ -223,8 +228,8 @@ function RecipeDrawer({ detail, childAgeMonths, minAgeMonths, isOpen, onToggle, 
             <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">🛒 Ingredients</p>
             <div className="divide-y divide-gray-100">
               {detail.ingredients.map((ing, i) => (
-                <div key={i} className="flex justify-between py-1">
-                  <span className="text-sm text-gray-700">{ing.item}</span>
+                <div key={i} className={cn('flex justify-between py-1', isRTL && 'flex-row-reverse')}>
+                  <span className="text-sm text-gray-700">{t(ing.item)}</span>
                   <span className="text-sm font-semibold text-gray-800">{ing.quantity} {ing.unit}</span>
                 </div>
               ))}
@@ -240,7 +245,7 @@ function RecipeDrawer({ detail, childAgeMonths, minAgeMonths, isOpen, onToggle, 
                   <span className="w-5 h-5 rounded-full bg-gray-200 text-xs flex items-center justify-center text-gray-600 flex-shrink-0 mt-0.5">
                     {i + 1}
                   </span>
-                  <p className="text-sm text-gray-700 leading-relaxed">{step}</p>
+                  <p className="text-sm text-gray-700 leading-relaxed">{t(step)}</p>
                 </div>
               ))}
             </div>
@@ -256,9 +261,9 @@ function RecipeDrawer({ detail, childAgeMonths, minAgeMonths, isOpen, onToggle, 
             )}
           >
             {childAgeMonths < 10 ? (
-              <><span>⚠️ </span><strong>Under 10 months: </strong>{detail.spiceSaltNote}</>
+              <><span>⚠️ </span><strong>Under 10 months: </strong>{t(detail.spiceSaltNote)}</>
             ) : (
-              <><span>ℹ️ </span>{detail.spiceSaltNote}</>
+              <><span>ℹ️ </span>{t(detail.spiceSaltNote)}</>
             )}
           </div>
 
