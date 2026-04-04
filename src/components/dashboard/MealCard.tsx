@@ -192,7 +192,7 @@ function RecipeDrawer({ detail, childAgeMonths, minAgeMonths, isOpen, onToggle, 
           overflow: 'hidden',
           transition: isOpen
             ? 'max-height 0.4s ease-in-out'
-            : 'max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+            : 'max-height 0.5s cubic-bezier(0.4, 0, 0.6, 1)',
         }}
       >
         <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 space-y-4">
