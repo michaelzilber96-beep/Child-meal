@@ -178,9 +178,17 @@ function RecipeDrawer({ detail, childAgeMonths, minAgeMonths, isOpen, onToggle, 
         </span>
       </button>
 
-      {/* Content — visible only when open */}
-      {isOpen && (
-        <div key={String(isOpen)} className="animate-meal-in bg-gray-50 border border-gray-200 rounded-2xl p-4 space-y-4">
+      {/* Content — roll-up/down via max-height transition */}
+      <div
+        style={{
+          maxHeight: isOpen ? '1200px' : '0',
+          overflow: 'hidden',
+          transition: isOpen
+            ? 'max-height 0.4s ease-in-out'
+            : 'max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+        }}
+      >
+        <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 space-y-4">
 
           {/* 1. TIME BAR */}
           <p className="text-xs text-gray-500 font-medium">
@@ -253,8 +261,21 @@ function RecipeDrawer({ detail, childAgeMonths, minAgeMonths, isOpen, onToggle, 
               <><span>ℹ️ </span>{detail.spiceSaltNote}</>
             )}
           </div>
+
+          {/* 7. CLOSE BUTTON */}
+          <button
+            type="button"
+            onClick={onToggle}
+            className="w-full py-2 rounded-2xl border-0 text-sm font-semibold"
+            style={{
+              background: 'var(--th-primary-dim)',
+              color: 'var(--th-primary)',
+            }}
+          >
+            ✕
+          </button>
         </div>
-      )}
+      </div>
     </div>
   );
 }
