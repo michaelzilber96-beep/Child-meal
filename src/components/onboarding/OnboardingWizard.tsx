@@ -14,6 +14,7 @@ import { ProfileStep } from './ProfileStep';
 import { AllergiesStep } from './AllergiesStep';
 import { PreferencesStep } from './PreferencesStep';
 import { ExclusionsStep } from './ExclusionsStep';
+import { DisclaimerScreen } from './DisclaimerScreen';
 const TOTAL_STEPS = 5;
 
 interface OnboardingWizardProps {
@@ -26,6 +27,7 @@ export function OnboardingWizard({ locale }: OnboardingWizardProps) {
   const tapp = useTranslations('app');
 
   const [step, setStep] = useState(1);
+  const [showDisclaimer, setShowDisclaimer] = useState(false);
   const [draft, setDraft] = useState<Partial<ChildProfile>>({
     locale: locale as Locale,
     allergens: [],
@@ -41,6 +43,16 @@ export function OnboardingWizard({ locale }: OnboardingWizardProps) {
       if (saved.locale) setStep(2);
     }
   }, []);
+
+  // Check if disclaimer was already accepted — if so, skip it
+  function disclaimerAlreadyAccepted(): boolean {
+    try {
+      const d = localStorage.getItem('tb_disclaimer');
+      return d ? JSON.parse(d).accepted === true : false;
+    } catch {
+      return false;
+    }
+  }
 
   function updateDraft(data: Partial<ChildProfile>) {
     const updated = { ...draft, ...data };
@@ -103,6 +115,11 @@ export function OnboardingWizard({ locale }: OnboardingWizardProps) {
     <>
       {/* Theme syncs immediately when gender is chosen in step 2 */}
       <ThemeProvider gender={gender} />
+
+      {/* Disclaimer overlay — rendered over the final step, not instead of it */}
+      {showDisclaimer && (
+        <DisclaimerScreen onComplete={handleFinish} />
+      )}
 
       <div className="min-h-screen bg-bg flex flex-col items-center justify-start px-4 py-8">
         <div className="w-full max-w-md space-y-6">
@@ -179,7 +196,13 @@ export function OnboardingWizard({ locale }: OnboardingWizardProps) {
                     <NavBackButton onBack={handleBack} t={t} />
                     <Button
                       size="lg"
-                      onClick={handleFinish}
+                      onClick={() => {
+                        if (disclaimerAlreadyAccepted()) {
+                          handleFinish();
+                        } else {
+                          setShowDisclaimer(true);
+                        }
+                      }}
                       className="flex-1 text-white font-bold"
                       style={{
                         background: 'linear-gradient(to right, var(--th-primary), var(--th-accent))',
