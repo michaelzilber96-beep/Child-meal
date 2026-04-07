@@ -48,6 +48,7 @@ export function OnboardingWizard({ locale }: OnboardingWizardProps) {
   function disclaimerAlreadyAccepted(): boolean {
     try {
       const d = localStorage.getItem('tb_disclaimer');
+      console.log('disclaimer check:', d);
       return d ? JSON.parse(d).accepted === true : false;
     } catch {
       return false;

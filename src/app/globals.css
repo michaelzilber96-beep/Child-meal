@@ -19,6 +19,17 @@
   --th-greeting-from: #f8fafc;
   --th-greeting-to: #f1f5f9;
   --th-greeting-border: #cbd5e1;
+
+  /* ── Semantic colour tokens ── */
+  --color-background-primary: #ffffff;
+  --color-background-secondary: var(--th-light);
+  --color-border-secondary: #d1d5db;
+  --color-border-tertiary: var(--th-primary-dim);
+  --color-text-secondary: #6b7280;
+
+  /* ── Border-radius tokens ── */
+  --border-radius-xl: 1.5rem;
+  --border-radius-md: 0.75rem;
 }
 
 html[data-gender="girl"] {
@@ -113,4 +124,14 @@ html[data-gender="boy"] {
 /* ── Tooltip ─────────────────────────────────────────────────────── */
 .tooltip-content {
   animation: mealFadeIn 150ms ease both;
+}
+
+/* ── Disclaimer bottom-sheet slide-up ───────────────────────────── */
+@keyframes disclaimerSlideUp {
+  from { transform: translateX(-50%) translateY(100%); }
+  to   { transform: translateX(-50%) translateY(0); }
+}
+
+.disclaimer-card-slide {
+  animation: disclaimerSlideUp 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
