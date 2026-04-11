@@ -197,6 +197,7 @@ export function OnboardingWizard({ locale }: OnboardingWizardProps) {
                     <Button
                       size="lg"
                       onClick={() => {
+                        console.log('disclaimer check:', localStorage.getItem('tb_disclaimer'));
                         if (disclaimerAlreadyAccepted()) {
                           handleFinish();
                         } else {
