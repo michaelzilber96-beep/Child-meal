@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { cn } from '@/lib/utils';
 import { RECIPE_DETAILS, RecipeDetail, Locale, LocalizedString } from '@/data/recipeDetails';
+import { RECIPE_VIDEOS } from '@/data/recipeVideos';
 
 const SLOT_CONFIG: Record<MealSlot, { color: string; bg: string; border: string; label: string; emoji: string }> = {
   breakfast: {
@@ -118,6 +119,7 @@ export function MealCard({ slot, meal, animKey, onChangeDish, childAgeMonths }: 
         {detail && (
           <RecipeDrawer
             detail={detail}
+            recipeId={meal.recipe.id}
             childAgeMonths={childAgeMonths}
             minAgeMonths={meal.recipe.minAgeMonths}
             isOpen={recipeOpen}
@@ -145,6 +147,7 @@ export function MealCard({ slot, meal, animKey, onChangeDish, childAgeMonths }: 
 
 interface RecipeDrawerProps {
   detail: RecipeDetail;
+  recipeId: string;
   childAgeMonths: number;
   minAgeMonths: number;
   isOpen: boolean;
@@ -152,13 +155,16 @@ interface RecipeDrawerProps {
   recipeLabel: string;
 }
 
-function RecipeDrawer({ detail, childAgeMonths, minAgeMonths, isOpen, onToggle, recipeLabel }: RecipeDrawerProps) {
+function RecipeDrawer({ detail, recipeId, childAgeMonths, minAgeMonths, isOpen, onToggle, recipeLabel }: RecipeDrawerProps) {
   const locale = useLocale() as Locale;
   const loc = (field: LocalizedString | string): string =>
     typeof field === 'string' ? field : field[locale] ?? field.en;
   const t = useTranslations('dashboard');
   const td = t as unknown as (k: string, params?: Record<string, unknown>) => string;
   const isRTL = locale === 'he';
+
+  const videoUrl = RECIPE_VIDEOS[recipeId] ?? null;
+  const videoId = videoUrl ? new URL(videoUrl).searchParams.get('v') : null;
 
   return (
     <div className="space-y-2" dir={isRTL ? 'rtl' : 'ltr'}>
@@ -272,7 +278,58 @@ function RecipeDrawer({ detail, childAgeMonths, minAgeMonths, isOpen, onToggle, 
             )}
           </div>
 
-          {/* 7. CLOSE BUTTON */}
+          {/* 7. VIDEO */}
+          {videoId && (
+            <div>
+              <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--color-text-secondary)', marginBottom: 8 }}>
+                {td('watchVideo')}
+              </p>
+              <div
+                style={{
+                  position: 'relative',
+                  width: '100%',
+                  aspectRatio: '16 / 9',
+                  borderRadius: 'var(--border-radius-md)',
+                  overflow: 'hidden',
+                  cursor: 'pointer',
+                  background: '#000',
+                }}
+                onClick={() => window.open(videoUrl!, '_blank')}
+              >
+                <img
+                  src={`https://img.youtube.com/vi/${videoId}/hqdefault.jpg`}
+                  alt=""
+                  loading="lazy"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+                <div
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 56,
+                      height: 56,
+                      borderRadius: '50%',
+                      background: 'rgba(0, 0, 0, 0.7)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <span style={{ color: '#fff', fontSize: 20 }}>▶</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 8. CLOSE BUTTON */}
           <button
             type="button"
             onClick={onToggle}
